@@ -59,6 +59,23 @@ pipeline {
         '''
       }
     }
+    stage('Image security checks') {
+      steps {
+        sh '''
+          set -eu
+          uid=$(docker run --rm --entrypoint id "$IMAGE:$BUILD_NUMBER" -u)
+          echo "Container UID: $uid"
+          test "$uid" != "0"
+          if docker run --rm --entrypoint pip "$IMAGE:$BUILD_NUMBER" list 2>/dev/null | grep -Ei '^(pytest|ruff) '; then
+            echo "Dev dependencies found in image"; exit 1
+          fi
+          if docker run --rm --entrypoint ls "$IMAGE:$BUILD_NUMBER" -a /service | grep -E '^(\\.env|\\.venv|tests)$'; then
+            echo "Secrets or dev files found in image"; exit 1
+          fi
+          echo "Image security checks passed"
+        '''
+      }
+    }
     stage('Blue/green deploy') {
       steps {
         sh '''

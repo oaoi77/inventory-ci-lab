@@ -4,3 +4,12 @@
 __pycache__
 reports
 *.pyc
+.env
+.env.*
+*.pem
+*.key
+.ruff_cache
+tests
+requirements-dev.txt
+Jenkinsfile*
+deploy
