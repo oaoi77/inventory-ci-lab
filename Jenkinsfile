@@ -14,6 +14,16 @@ pipeline {
     stage('Checkout') {
       steps { checkout scm; sh 'git rev-parse --short HEAD' }
     }
+    stage('Lint') {
+      steps {
+        sh '''
+          set -eu
+          python3 -m venv .venv
+          .venv/bin/pip install -r requirements-dev.txt
+          .venv/bin/ruff check app tests
+        '''
+      }
+    }
     stage('Unit tests') {
       steps {
         sh '''
