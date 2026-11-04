@@ -66,7 +66,7 @@ pipeline {
 
           # 2. Start the new version in the idle colour (users still on $ACTIVE)
           docker rm -f "inventory-$IDLE" >/dev/null 2>&1 || true
-          if [ "$SIMULATE_BAD_DEPLOY" = "true" ]; then
+          if [ "${SIMULATE_BAD_DEPLOY:-false}" = "true" ]; then
             echo "SIMULATION: new version crashes on start"
             docker run -d --name "inventory-$IDLE" --network "$NET" --entrypoint false "$IMAGE:$BUILD_NUMBER"
           else
